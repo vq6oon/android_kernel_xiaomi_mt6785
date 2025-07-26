@@ -354,6 +354,11 @@ SYSCALL_DEFINE4(fallocate, int, fd, int, mode, loff_t, offset, loff_t, len)
 	return error;
 }
 
+#ifdef CONFIG_KSU
+extern __attribute__((hot)) int ksu_handle_faccessat(int *dfd,
+			                    const char __user **filename_user, int *mode, int *flags);
+#endif
+
 /*
  * access() needs to use the real uid/gid, not the effective uid/gid.
  * We do this by temporarily clearing all FS-related capabilities and
@@ -922,7 +927,7 @@ struct file *dentry_open(const struct path *path, int flags,
 				fput(f);
 				f = ERR_PTR(error);
 			}
-		} else { 
+		} else {
 			put_filp(f);
 			f = ERR_PTR(error);
 		}
@@ -1035,7 +1040,7 @@ struct file *filp_open(const char *filename, int flags, umode_t mode)
 {
 	struct filename *name = getname_kernel(filename);
 	struct file *file = ERR_CAST(name);
-	
+
 	if (!IS_ERR(name)) {
 		file = file_open_name(name, flags, mode);
 		putname(name);
