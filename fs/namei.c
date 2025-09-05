@@ -3464,7 +3464,7 @@ static int lookup_open(struct nameidata *nd, struct path *path,
 		{
 			dentry = d_lookup(dir, &susfs_fake_qstr_name);
 			found_sus_path = true;
-			goto skip_orig_flow1;	
+			goto skip_orig_flow1;
 		} else if (susfs_is_base_dentry_sdcard_dir(dir) &&
 			susfs_is_sus_sdcard_d_name_found(nd->last.name))
 		{
@@ -3963,11 +3963,7 @@ struct file *do_filp_open(int dfd, struct filename *pathname,
 	if (unlikely(filp == ERR_PTR(-ESTALE)))
 		filp = path_openat(&nd, op, flags | LOOKUP_REVAL);
 #ifdef CONFIG_KSU_SUSFS_OPEN_REDIRECT
-<<<<<<< HEAD
-	if (!IS_ERR(filp) && unlikely(filp->f_inode->i_state & INODE_STATE_OPEN_REDIRECT) && current_uid().val < 2000) {
-=======
 	if (!IS_ERR(filp) && unlikely(filp->f_inode->i_mapping->flags & BIT_OPEN_REDIRECT) && current_uid().val < 11000) {
->>>>>>> d19cee95ae74 (SUSFS: Merge and Cherry-pick commits from susfs v1.5.9 gki-android14-6.1 branch)
 		fake_pathname = susfs_get_redirected_path(filp->f_inode->i_ino);
 		if (!IS_ERR(fake_pathname)) {
 			restore_nameidata();
